@@ -180,15 +180,15 @@ def process_content_chunking():
             # we tag the words in our sentence with the part of speech that they are
             tagged = nltk.pos_tag(words)
 
-            # we create a chunkGram looking for phrases that might contain an adverb followed by a verb, followed by
+            # we create a chunk_gram looking for phrases that might contain an adverb followed by a verb, followed by
             # a pro-noun an a noun
-            chunkGram = r"""Chunk: {<RB.?>*<VB.?>*<NNP><NN>?}"""
+            chunk_gram = r"""Chunk: {<RB.?>*<VB.?>*<NNP><NN>?}"""
 
             # we create our parser which will use the regex chunk gram above
-            chunkParser = nltk.RegexpParser(chunkGram)
+            chunk_parser = nltk.RegexpParser(chunk_gram)
 
             # we chunk our tagged text
-            chunked = chunkParser.parse(tagged)
+            chunked = chunk_parser.parse(tagged)
 
             # in this output we will see a bunch of nouns have been found by chunk
             print(chunked)
@@ -202,3 +202,34 @@ def process_content_chunking():
 
 # we call the above chunking function
 process_content_chunking()
+
+
+##########################
+# Chinking with nltk
+##########################
+
+# Chinking is the removal of things
+# So, you might want to chunk everything, except a certain something
+# e.g. keep everything but pronouns
+
+def process_content_chinking():
+    try:
+        # for each sentence in our example text
+        for i in tokenized:
+            # we split out the words
+            words = word_tokenize(i)
+            # we tag the words with part of speech
+            tagged = nltk.pos_tag(words)
+
+            # The below chunks everything apart from a verb followed by a preposition or determiner
+            chunk_gram = r"""Chunk: {<.*>+}
+                                    }<VB.?|IN|DT>+{"""
+            chunk_parser = nltk.RegexpParser(chunk_gram)
+            # we then chunk our sentence
+            chunked = chunk_parser.parse(tagged)
+            # we then draw the chunking out for better visual representation for a human
+            chunked.draw()
+    except Exception as e:
+        print(str(e))
+
+process_content_chinking()
